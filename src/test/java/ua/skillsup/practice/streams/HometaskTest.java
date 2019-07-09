@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +15,8 @@ public class HometaskTest {
 		List<Integer> listOfNumbers = Arrays.asList(1, 2, 3, 4, 5);
 
 		//Replace here
-		long quantity = 0;
+		long quantity = listOfNumbers.stream()
+				.reduce((el1,el2)->el1+el2).get();
 
 		assertThat(quantity).isEqualTo(15L);
 	}
@@ -24,7 +26,9 @@ public class HometaskTest {
 		List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
 		//Replace here
-		List<Integer> numbersGreaterThan5 = Collections.emptyList();
+		List<Integer> numbersGreaterThan5 = numbers.stream()
+				.filter(el->el>5)
+				.collect(Collectors.toList());
 
 		assertThat(numbersGreaterThan5).contains(6, 8);
 	}
@@ -35,6 +39,10 @@ public class HometaskTest {
 
 		//Replace here
 		List<String> multipliedNumbersAsString = Collections.emptyList();
+		multipliedNumbersAsString = numbers.stream()
+				.map(el->el*2)
+				.map(el->el.toString())
+		.collect(Collectors.toList());
 
 		assertThat(multipliedNumbersAsString).contains("2", "4", "6", "8", "10");
 	}
@@ -45,6 +53,8 @@ public class HometaskTest {
 
 		//Replace here
 		boolean anyNumberGreaterThan4 = false;
+		anyNumberGreaterThan4 = numbers.stream()
+				.anyMatch(el->el>4);
 
 		assertThat(anyNumberGreaterThan4).isTrue();
 	}
@@ -55,6 +65,9 @@ public class HometaskTest {
 
 		//Replace here
 		boolean eachNumberIsPair = false;
+		eachNumberIsPair = numbers
+				.stream()
+				.allMatch(el->el%el==0);
 
 		assertThat(eachNumberIsPair).isTrue();
 	}
@@ -62,11 +75,15 @@ public class HometaskTest {
 	@Test
 	public void shouldSortTheList() throws Exception {
 		List<String> listOfWords = Arrays.asList("B", "A", "D", "E", "C");
+		List<String> listExpectedSorted = Arrays.asList("A", "B", "C", "D", "E");
 
 		//Replace here
 		List<String> sortedList = Collections.emptyList();
+		sortedList  = listOfWords.stream()
+				.sorted(String::compareTo)
+				.collect(Collectors.toList());
 
-		assertThat(sortedList).contains("A", "B", "C", "D", "E");
+		assertThat(sortedList).isEqualTo(listExpectedSorted);
 	}
 
 	@Test
@@ -80,6 +97,9 @@ public class HometaskTest {
 
 		//Replace here
 		Optional<BigDecimal> reduced = Optional.empty();
+		reduced = Optional.ofNullable(numbers.stream()
+				.filter(el -> BigDecimal.ZERO.compareTo(el)<0)
+				.reduce(BigDecimal.ONE, BigDecimal::multiply));
 
 		assertThat(reduced.isPresent()).isTrue();
 		assertThat(reduced.get()).isEqualByComparingTo("300");
@@ -96,6 +116,7 @@ public class HometaskTest {
 
 		//Replace here
 		Map<BlogPostType, List<BlogPost>> postsPerType = Collections.emptyMap();
+		postsPerType = posts.stream().collect(Collectors.groupingBy(el->el.getType()));
 
 		assertThat(postsPerType.get(BlogPostType.NEWS).size()).isEqualTo(2);
 		assertThat(postsPerType.get(BlogPostType.GUIDE).size()).isEqualTo(1);
@@ -113,6 +134,7 @@ public class HometaskTest {
 
 		//Replace here
 		Map<String, BlogPost> postPerTitle = Collections.emptyMap();
+		postPerTitle = posts.stream().collect(Collectors.toMap(el->el.getTitle(),el->el));
 
 		assertThat(postPerTitle.get("News item 1").getTitle()).isEqualTo("News item 1");
 		assertThat(postPerTitle.get("Tech review 1").getTitle()).isEqualTo("Tech review 1");
